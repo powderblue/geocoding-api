@@ -1,0 +1,7 @@
+# See https://github.com/phpstan/phpstan
+parameters:
+    level: max
+
+    paths:
+        - src/
+        - tests/
