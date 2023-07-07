@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "64d5f4e79286fc3e80205442cb841670",
+    "content-hash": "be58c76345feace6e4789ab95848b307",
     "packages": [
         {
             "name": "powderblue/curl",
@@ -36,31 +36,7 @@
                     "PowderBlue\\Curl\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "PowderBlue\\Curl\\Tests\\": "tests/src/"
-                }
-            },
-            "scripts": {
-                "app:analyse-php": [
-                    "phpstan analyse -c phpstan.neon --ansi"
-                ],
-                "app:lint-tests": [
-                    "cd tests && phpcs"
-                ],
-                "app:lint-php": [
-                    "phpcs"
-                ],
-                "app:test-php": [
-                    "cd tests && ./runner.php"
-                ],
-                "app:check-quality": [
-                    "@app:analyse-php",
-                    "@app:lint-tests",
-                    "@app:lint-php",
-                    "@app:test-php"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
