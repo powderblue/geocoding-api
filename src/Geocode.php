@@ -75,7 +75,7 @@ class Geocode
     public function byAddress(
         string $address,
         string $region = null
-    ): ?array {
+    ): array {
         $geocodingResponse = $this->invoke([
             'address' => $address,
             'region' => $region,
@@ -88,6 +88,7 @@ class Geocode
             throw new RuntimeException($errorInfo);
         }
 
+        /** @phpstan-var SorgGeoCoordinates */
         return $geocodingResponse->getFirstGeoCoordinates();
     }
 

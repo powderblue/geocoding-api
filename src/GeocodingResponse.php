@@ -57,6 +57,8 @@ class GeocodingResponse
     }
 
     /**
+     * This should return `null` only if the geocoding request was unsuccessful
+     *
      * @phpstan-return SorgGeoCoordinates|null
      */
     public function getFirstGeoCoordinates(): ?array
