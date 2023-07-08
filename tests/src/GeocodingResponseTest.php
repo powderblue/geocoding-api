@@ -219,15 +219,15 @@ class GeocodingResponseTest extends TestCase
 
     /**
      * @dataProvider providesSorggeocoordinates
-     * @phpstan-param SorgGeoCoordinates|null $expected
+     * @phpstan-param SorgGeoCoordinates|null $expectedGeoCoordinates
      */
     public function testGetfirstgeocoordinates(
-        ?array $expected,
+        ?array $expectedGeoCoordinates,
         stdClass $rawData
     ): void {
         $response = new GeocodingResponse($rawData);
 
-        $this->assertSame($expected, $response->getFirstGeoCoordinates());
+        $this->assertSame($expectedGeoCoordinates, $response->getFirstGeoCoordinates());
     }
 
     /** @return array<mixed[]> */
@@ -265,11 +265,11 @@ class GeocodingResponseTest extends TestCase
 
     /** @dataProvider providesResponsesToUnsuccessfulRequests */
     public function testGeterrorinfoReturnsAMessageContainingDetailsOfTheErrorThatOccurred(
-        ?string $expected,
+        ?string $expectedErrorInfo,
         stdClass $rawResponseData
     ): void {
         $response = new GeocodingResponse($rawResponseData);
 
-        $this->assertSame($expected, $response->getErrorInfo());
+        $this->assertSame($expectedErrorInfo, $response->getErrorInfo());
     }
 }

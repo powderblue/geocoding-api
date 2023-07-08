@@ -1,6 +1,6 @@
 {
     "name": "powderblue/geocoding-api",
-    "description": "",
+    "description": "A basic PHP client for working with Google's Geocoding API",
     "type": "project",
     "license": "ISC",
     "authors": [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PowderBlue\GeocodingApi;
 
+use InvalidArgumentException;
 use PowderBlue\Curl\Curl;
 use RuntimeException;
 use stdClass;
@@ -35,8 +36,6 @@ class Geocode
     }
 
     /**
-     * Undocumented function
-     *
      * @phpstan-param GeocodeParameters $parameters
      * @return string
      */
@@ -58,7 +57,7 @@ class Geocode
     /**
      * @phpstan-param GeocodeParameters $parameters
      */
-    private function invoke(array $parameters): GeocodingResponse
+    public function __invoke(array $parameters): GeocodingResponse
     {
         $forwardUrl = $this->createForwardUrl($parameters);
         $curlResponse = (new Curl())->get($forwardUrl);
@@ -69,16 +68,27 @@ class Geocode
     }
 
     /**
+     * Convenience method
+     *
      * @phpstan-return SorgGeoCoordinates
+     * @throws InvalidArgumentException If the format of the country code is invalid
+     * @throws InvalidArgumentException If the country code does not exist
      * @throws RuntimeException If geocoding was unsuccessful
      */
     public function byAddress(
         string $address,
-        string $region = null
+        string $countryIsoAlpha2 = null
     ): array {
-        $geocodingResponse = $this->invoke([
+        $tld = null;
+
+        if (null !== $countryIsoAlpha2) {
+            $country = new Country($countryIsoAlpha2);
+            $tld = $country->getTopLevelDomain();
+        }
+
+        $geocodingResponse = $this([
             'address' => $address,
-            'region' => $region,
+            'region' => $tld,
         ]);
 
         if (!$geocodingResponse->wasSuccessful()) {
@@ -90,6 +100,26 @@ class Geocode
 
         /** @phpstan-var SorgGeoCoordinates */
         return $geocodingResponse->getFirstGeoCoordinates();
+    }
+
+    /**
+     * Convenience method
+     *
+     * (A postcode must be accompanied by a country, to give it context)
+     *
+     * @phpstan-return SorgGeoCoordinates
+     * @throws InvalidArgumentException If the format of the country code is invalid
+     * @throws InvalidArgumentException If the country code does not exist
+     * @throws RuntimeException If geocoding was unsuccessful
+     */
+    public function byPostcode(
+        string $postcode,
+        string $countryIsoAlpha2
+    ): array {
+        $country = new Country($countryIsoAlpha2);
+
+        // Including the full country-name in the address guarantees to reduce ambiguity
+        return $this->byAddress("{$postcode} {$country->getLongName()}", $country->getIsoAlpha2());
     }
 
     private function setApiKey(string $key): self
