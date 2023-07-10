@@ -5,6 +5,8 @@
  * System tests
  */
 
+declare(strict_types=1);
+
 use PowderBlue\GeocodingApi\Geocode;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
@@ -20,6 +22,13 @@ $methodArgLists = [
         ['07001', 'ES'],
         ['SW1E 5ND', 'GB'],
     ],
+    'byLatLong' => [
+        ['43.549543', '7.014364', 'FR'],
+        ['39.513047', '2.538872', 'ES'],
+        ['43.549543', '7.014364'],
+        [43.549543, 7.014364],
+        ['50.88916732998306', '-0.5768395884825535'],
+    ],
 ];
 
 $config = require __DIR__ . '/.config.php';
@@ -31,8 +40,11 @@ foreach ($methodArgLists as $methodName => $argLists) {
     foreach ($argLists as $argList) {
         $geoCoordinates = $geocode->{$methodName}(...$argList);
 
-        $argListStr = implode(', ', array_map(function (string $arg): string {
-            return "'{$arg}'";
+        $argListStr = implode(', ', array_map(function ($arg) {
+            return is_string($arg)
+                ? "'{$arg}'"
+                : $arg
+            ;
         }, $argList));
 
         printf(

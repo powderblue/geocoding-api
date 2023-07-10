@@ -37,6 +37,18 @@ class GeocodingResponseTest extends TestCase
         $this->assertSame($rawData, $response->getRawData());
     }
 
+    public function testCreateminimalgeocodingresponseInThisTestCase(): void
+    {
+        $fooResponse = $this->createMinimalGeocodingResponse('FOO');
+
+        $expectedRawData = new stdClass();
+        $expectedRawData->results = [];
+        $expectedRawData->status = 'FOO';
+
+        $this->assertInstanceOf(GeocodingResponse::class, $fooResponse);
+        $this->assertEquals($expectedRawData, $fooResponse->getRawData());
+    }
+
     /** @return array<mixed[]> */
     public function providesSuccessfulResponses(): array
     {

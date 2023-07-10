@@ -30,6 +30,8 @@ Array
 Examples of geocoding an address using the convenience method:
 
 ```php
+$geocode = new Geocode('<your-api-key>');
+
 // Without using region biasing
 $geoCoordinates = $geocode->byAddress('25 Old Gardens Close Tunbridge Wells TN2 5ND');
 
@@ -40,6 +42,19 @@ $geoCoordinates = $geocode->byAddress('25 Old Gardens Close Tunbridge Wells TN2 
 An example of geocoding a postcode using the convenience method:
 
 ```php
+$geocode = new Geocode('<your-api-key>');
+
 // `byPostcode()` *requires* a country; this is to help reduce ambiguity and, therefore, improve results
-$geoCoordinates = $geocode->byPostcode('07001', 'ES');  // => Palma, Majorca
+$geoCoordinates = $geocode->byPostcode('07001', 'ES');
+  // => Palma, Majorca
+```
+
+## Reverse Geocoding
+
+An example of reverse-geocoding using the convenience method:
+
+```php
+$geocode = new Geocode('<your-api-key>');
+$geoCoordinates = $geocode->byLatLong('50.88916732998306', '-0.5768395884825535');
+  // => Arundel, West Sussex, GB
 ```

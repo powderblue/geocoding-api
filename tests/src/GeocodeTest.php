@@ -25,47 +25,119 @@ class GeocodeTest extends TestCase
     }
 
     /** @return array<mixed[]> */
-    public function providesForwardUrls(): array
+    public function providesGeocodingUrls(): array
     {
         return [
             [
-                'https://maps.googleapis.com/maps/api/geocode/json?key=foo&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND',
+                'https://maps.googleapis.com/maps/api/geocode/json?key=foo&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&language=en-GB',
                 [
-                    'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+                    [
+                        'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+                    ],
                 ],
                 'foo',
             ],
             [
-                'https://maps.googleapis.com/maps/api/geocode/json?key=bar&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&region=uk',
+                'https://maps.googleapis.com/maps/api/geocode/json?key=bar&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&region=uk&language=en-GB',
                 [
-                    'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
-                    'region' => 'uk',
+                    [
+                        'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+                        'region' => 'uk',
+                    ],
                 ],
                 'bar',
             ],
-            [
-                'https://maps.googleapis.com/maps/api/geocode/json?key=foo&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND',
+            [  // #2
+                'https://maps.googleapis.com/maps/api/geocode/json?key=baz&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&language=en-GB',
                 [
-                    'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
-                    'region' => null,
+                    [
+                        'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+                        'region' => null,  // `null`s are removed
+                    ],
                 ],
-                'foo',
+                'baz',
             ],
+            [
+                'https://maps.googleapis.com/maps/api/geocode/json?key=qux&latlng=40.714224%2C-73.961452&language=en-GB&region=us',
+                [
+                    [
+                        'latlng' => '40.714224,-73.961452',
+                        'language' => 'en-GB',
+                        'region' => 'us',
+                    ],
+                ],
+                'qux',
+            ],
+            [
+                'https://maps.googleapis.com/maps/api/geocode/json?key=quux&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&language=en-GB&region=fr',
+                [
+                    [
+                        'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+                    ],
+                    'fr',
+                ],
+                'quux',
+            ],
+            [  // #5
+                'https://maps.googleapis.com/maps/api/geocode/json?key=corge&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&language=en-GB',
+                [
+                    [
+                        'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+                        'region' => 'fr',
+                    ],
+                    null,  // Explicitly "use no region"
+                ],
+                'corge',
+            ],
+            [
+                'https://maps.googleapis.com/maps/api/geocode/json?key=grault&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&region=uk&language=en-GB',
+                [
+                    [
+                        'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+                        'region' => 'fr',
+                    ],
+                    'uk',  // Overrides the region in the parameters
+                ],
+                'grault',
+            ],
+            // [
+            //     'https://maps.googleapis.com/maps/api/geocode/json?key=garply&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&language=fr',
+            //     [
+            //         [
+            //             'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+            //         ],
+            //         null,
+            //         'fr',
+            //     ],
+            //     'garply',
+            // ],
+            // [  // #8
+            //     'https://maps.googleapis.com/maps/api/geocode/json?key=waldo&address=25%20Old%20Gardens%20Close%20Tunbridge%20Wells%20TN2%205ND&language=en',
+            //     [
+            //         [
+            //             'address' => '25 Old Gardens Close Tunbridge Wells TN2 5ND',
+            //             'language' => 'fr'
+            //         ],
+            //         null,
+            //         'en',  // Overrides the language in the parameters
+            //     ],
+            //     'waldo',
+            // ],
         ];
     }
 
     /**
-     * @dataProvider providesForwardUrls
-     * @phpstan-param GeocodeParameters $geocodeParameters
+     * @dataProvider providesGeocodingUrls
+     * @param array{0:GeocodeParameters,1?:string|null} $argsForCreateUrl
      */
-    public function testCreateforwardurlCreatesTheUrlOfAForwardGeocodingRequest(
+    public function testCreateurlCreatesTheUrlOfAGeocodingRequest(
         string $expectedUrl,
-        array $geocodeParameters,
+        array $argsForCreateUrl,
         string $apiKey
     ): void {
         $geocode = new Geocode($apiKey);
 
-        $this->assertSame($expectedUrl, $geocode->createForwardUrl($geocodeParameters));
+        $this->assertSame($expectedUrl, $geocode->createUrl(...$argsForCreateUrl));
     }
 
     public function testIsInvokable(): void

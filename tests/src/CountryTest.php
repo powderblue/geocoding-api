@@ -10,18 +10,38 @@ use PowderBlue\GeocodingApi\Country;
 
 class CountryTest extends TestCase
 {
+    /** @factory Country */
+    private function createCountry(string $countryIsoAlpha2 = 'GB'): Country
+    {
+        return new Country($countryIsoAlpha2, 'en-GB');
+    }
+
     public function testIsInstantiable(): void
     {
-        $country = new Country('GB');
+        $country = new Country('GB', 'en-GB');
 
         $this->assertSame('GB', $country->getIsoAlpha2());
+        $this->assertSame('en-GB', $country->getDefaultLang());
     }
 
     public function testTheCountryCodeIsNormalized(): void
     {
-        $country = new Country('gb');
+        $country = new Country('gb', 'en-GB');
 
         $this->assertSame('GB', $country->getIsoAlpha2());
+    }
+
+    public function testFactoryMethodInThisTestCase(): void
+    {
+        $defaultReturnValue = $this->createCountry();
+
+        $this->assertSame('GB', $defaultReturnValue->getIsoAlpha2());
+        $this->assertSame('en-GB', $defaultReturnValue->getDefaultLang());
+
+        $france = $this->createCountry('FR');
+
+        $this->assertSame('FR', $france->getIsoAlpha2());
+        $this->assertSame('en-GB', $france->getDefaultLang());
     }
 
     public function testThrowsAnExceptionIfTheFormatOfTheCountryCodeIsInvalid(): void
@@ -29,20 +49,20 @@ class CountryTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The format of the country code (`United Kingdom`) is invalid');
 
-        new Country('United Kingdom');
+        $this->createCountry('United Kingdom');
     }
 
     public function testThrowsAnExceptionIfTheCountryCodeDoesNotExist(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Country code `yz` does not exist');
+        $this->expectExceptionMessage('Country code `YZ` does not exist');
 
-        new Country('yz');
+        $this->createCountry('YZ');
     }
 
     public function testGetlongnameReturnsTheLongNameOfTheCountry(): void
     {
-        $country = new Country('gb');
+        $country = $this->createCountry('GB');
 
         $this->assertSame('United Kingdom', $country->getLongName());
     }
@@ -70,7 +90,7 @@ class CountryTest extends TestCase
         ?string $expectedTld,
         string $isoAlpha2
     ): void {
-        $country = new Country($isoAlpha2);
+        $country = $this->createCountry($isoAlpha2);
 
         $this->assertSame($expectedTld, $country->getTopLevelDomain());
     }

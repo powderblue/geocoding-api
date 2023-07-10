@@ -20,7 +20,7 @@ class Country
     ];
 
     /**
-     * ISO 639-1 alpha-2 code
+     * ISO 639-1 code
      */
     private string $defaultLang;
 
@@ -31,10 +31,17 @@ class Country
 
     private string $longName;
 
-    public function __construct(string $isoAlpha2)
-    {
+    /**
+     * @param string $isoAlpha2 ISO 3166-1 alpha-2 code
+     * @throws InvalidArgumentException If the format of the country code is invalid
+     * @throws InvalidArgumentException If the country code does not exist
+     */
+    public function __construct(
+        string $isoAlpha2,
+        string $defaultLang
+    ) {
         $this
-            ->setDefaultLang('en')
+            ->setDefaultLang($defaultLang)
             ->setIsoAlpha2($isoAlpha2)
         ;
     }
@@ -46,7 +53,7 @@ class Country
         return $this;
     }
 
-    private function getDefaultLang(): string
+    public function getDefaultLang(): string
     {
         return $this->defaultLang;
     }
