@@ -92,7 +92,10 @@ class GeocodingResponse
             ?: $this->getFirstMatchingAddressComponentFromResult($firstResult, 'locality')
         ;
 
-        $adminAreaL2 = $this->getFirstMatchingAddressComponentFromResult($firstResult, 'administrative_area_level_2');
+        $adminArea = $this->getFirstMatchingAddressComponentFromResult($firstResult, 'administrative_area_level_2')
+            ?: $this->getFirstMatchingAddressComponentFromResult($firstResult, 'administrative_area_level_1')
+        ;
+
         $postalCode = $this->getFirstMatchingAddressComponentFromResult($firstResult, 'postal_code');
 
         $location = $firstResult->geometry->location;
@@ -101,7 +104,7 @@ class GeocodingResponse
             'address' => [
                 'streetAddress' => $streetAddress,
                 'addressLocality' => $postalTown ? $postalTown->long_name : null,
-                'addressRegion' => $adminAreaL2 ? $adminAreaL2->long_name : null,
+                'addressRegion' => $adminArea ? $adminArea->long_name : null,
                 'postalCode' => $postalCode ? $postalCode->long_name : null,
                 'addressCountry' => $addressCountry,
             ],

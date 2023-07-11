@@ -17,6 +17,7 @@ $methodArgLists = [
         ['Les Houches', 'FR'],
         ['Chamonix - Les Houches', 'FR'],
         ['Chamonix - Centre', 'FR'],
+        ['Lombardy Region Italy', 'IT'],
     ],
     'byPostcode' => [
         ['07001', 'ES'],
