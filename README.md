@@ -3,7 +3,7 @@
 A basic PHP client for working with [Google's Geocoding API](https://developers.google.com/maps/documentation/geocoding).
 
 > [!NOTE]
-> Only PHP7+ and the cURL extension are required; in a production environment there are no other dependencies
+> Only PHP7+ and the cURL extension are required: in a production environment there are no other dependencies
 
 ## Demo
 
