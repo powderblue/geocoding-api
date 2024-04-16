@@ -1,6 +1,8 @@
 # See https://github.com/phpstan/phpstan
 parameters:
     level: max
+    # @todo Support only PHP8+
+    phpVersion: 70400 # PHP 7.4
 
     paths:
         - src/

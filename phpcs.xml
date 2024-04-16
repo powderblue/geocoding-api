@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Geocoding API Coding Standard">
+<ruleset name="Coding Standard">
     <config name="ignore_warnings_on_exit" value="1"/>
 
     <file>src/</file>

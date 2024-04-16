@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace PowderBlue\GeocodingApi;
 
 use InvalidArgumentException;
-use PowderBlue\Curl\Curl;
+use PowderBlue\GeocodingApi\Exception\CurlException;
+use PowderBlue\GeocodingApi\Exception\CurlInitFailedException;
 use RuntimeException;
 use stdClass;
 
@@ -13,13 +14,26 @@ use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function array_replace;
+use function curl_close;
+use function curl_exec;
+use function curl_getinfo;
+use function curl_init;
+use function curl_setopt_array;
 use function func_num_args;
 use function http_build_query;
 use function implode;
 use function ini_get;
+use function json_decode;
 
+use const CURLINFO_RESPONSE_CODE;
+use const CURLOPT_HTTPGET;
+use const CURLOPT_RETURNTRANSFER;
+use const CURLOPT_URL;
+use const CURLOPT_USERAGENT;
+use const false;
 use const null;
 use const PHP_QUERY_RFC3986;
+use const true;
 
 /**
  * Action
@@ -29,7 +43,9 @@ use const PHP_QUERY_RFC3986;
  */
 class Geocode
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const API_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
     /**
@@ -101,8 +117,46 @@ class Geocode
     }
 
     /**
+     * @return \CurlHandle
+     * @phpstan-return resource
+     * @throws CurlInitFailedException If it failed to initialize a cURL session
+     * @throws CurlException If it failed to set all cURL options
+     */
+    private function createCurlHandle(string $apiUrl)
+    {
+        /**
+         * @var \CurlHandle|false
+         * @phpstan-var resource|false
+         */
+        $curlHandle = curl_init();
+
+        if (false === $curlHandle) {
+            throw new CurlInitFailedException();
+        }
+
+        $phpName = 'PHP ' . PHP_VERSION;
+        $userAgentStr = "com.powder-blue.geocoding-api/* ({$phpName}; ext-curl; https://github.com/powderblue/geocoding-api)";
+
+        $allOptionsSet = curl_setopt_array($curlHandle, [
+            CURLOPT_HTTPGET => true,
+            CURLOPT_URL => $apiUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_USERAGENT => $userAgentStr,
+        ]);
+
+        if (!$allOptionsSet) {
+            throw new CurlException('curl_setopt_array', $curlHandle);
+        }
+
+        return $curlHandle;
+    }
+
+    /**
      * @phpstan-param GeocodeParameters $parameters
      * @param Country|string|null $regionOrCountryBias `null` means "don't apply a region bias"
+     * @throws CurlException If it failed to perform the cURL session
+     * @throws CurlException If it failed to get information about the request from the cURL handle
+     * @throws RuntimeException If the HTTP request was unsuccessful
      */
     public function __invoke(
         array $parameters,
@@ -114,11 +168,41 @@ class Geocode
         ;
 
         $apiUrl = $this->createUrl($parameters, $region);
-        $curlResponse = (new Curl())->get($apiUrl);
-        /** @var stdClass */
-        $rawResponseData = $curlResponse->json();
 
-        return new GeocodingResponse($rawResponseData);
+        $curlHandle = null;
+
+        try {
+            $curlHandle = $this->createCurlHandle($apiUrl);
+            /** @var string|false */
+            $responseBody = curl_exec($curlHandle);
+
+            if (false === $responseBody) {
+                throw new CurlException('curl_exec', $curlHandle);
+            }
+
+            /** @var int|false */
+            $responseCode = curl_getinfo($curlHandle, CURLINFO_RESPONSE_CODE);
+
+            if (false === $responseCode) {
+                throw new CurlException('curl_getinfo', $curlHandle);
+            }
+        } finally {
+            if ($curlHandle) {
+                // @todo Remove this after upgrading to PHP8
+                curl_close($curlHandle);
+            }
+        }
+
+        $httpRequestSuccessful = $responseCode >= 200 && $responseCode <= 299;
+
+        if (!$httpRequestSuccessful) {
+            throw new RuntimeException('The HTTP request was unsuccessful', $responseCode);
+        }
+
+        /** @var stdClass */
+        $apiData = json_decode($responseBody);
+
+        return new GeocodingResponse($apiData);
     }
 
     /**

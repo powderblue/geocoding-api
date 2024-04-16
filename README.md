@@ -2,7 +2,15 @@
 
 A basic PHP client for working with [Google's Geocoding API](https://developers.google.com/maps/documentation/geocoding).
 
-If you'd like to see the library in action then you can run `tests/geocode.php`, which runs a bunch of tests on the various `Geocode` methods.  (Before doing so, however, you must add a project's API key to `tests/.config.php`.)
+> [!NOTE]
+> Only PHP7+ and the cURL extension are required; in a production environment there are no other dependencies
+
+## Demo
+
+If you'd like to see the library in action then you can execute `tests/geocode.php`, which runs a bunch of tests on the various `Geocode` methods.
+
+> [!IMPORTANT]
+> Before running `tests/geocode.php`, you must add a project's API key to `tests/.config.php`
 
 ## Return Value
 

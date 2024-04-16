@@ -4,55 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be58c76345feace6e4789ab95848b307",
-    "packages": [
-        {
-            "name": "powderblue/curl",
-            "version": "v2.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/powderblue/curl.git",
-                "reference": "8fb125114bc9719cfaf093f31907128405b66a60"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/powderblue/curl/zipball/8fb125114bc9719cfaf093f31907128405b66a60",
-                "reference": "8fb125114bc9719cfaf093f31907128405b66a60",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "php": ">=7.4.27"
-            },
-            "require-dev": {
-                "danbettles/codesniffer-standard": "^2.0",
-                "jaz303/ztest": "^0.0.3",
-                "phpstan/phpstan": "^1.10",
-                "squizlabs/php_codesniffer": "^3.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PowderBlue\\Curl\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Daniel Bettles",
-                    "email": "dan@powder-blue.com"
-                }
-            ],
-            "description": "A basic CURL wrapper for PHP.  This is a modernised, and maintained, version of @shuber's rather nice, simple cURL wrapper, https://github.com/shuber/curl.",
-            "support": {
-                "source": "https://github.com/powderblue/curl/tree/v2.0.3"
-            },
-            "time": "2023-07-06T21:01:33+00:00"
-        }
-    ],
+    "content-hash": "8d9b2f5435da892603c390803e31f7ee",
+    "packages": [],
     "packages-dev": [
         {
             "name": "danbettles/codesniffer-standard",
@@ -1985,7 +1938,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4|^8.1.3"
+        "php": "^7.4|^8.1.3",
+        "ext-curl": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
